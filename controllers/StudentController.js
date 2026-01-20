@@ -1,3 +1,5 @@
+const db = require('../database/config.js');
+
 class StudentController {
   constructor() {}
 
@@ -6,7 +8,13 @@ class StudentController {
   }
 
   insert(req, res) {
-    res.json({ msg: 'Insert student from class' });
+    try {
+      const { dni, name, surname, email } = req.body;
+      res.status(201).json({ message: 'Student has been created.' });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
   }
 
   studentDetail(req, res) {

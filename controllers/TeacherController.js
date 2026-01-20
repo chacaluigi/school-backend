@@ -1,4 +1,4 @@
-const db = require('../database/conn.js');
+const db = require('../database/config.js');
 
 class TeacherController {
   constructor() {}

@@ -30,7 +30,7 @@ class StudentController {
           if (err) {
             return res.status(400).send(err);
           }
-          return res.status(201).json({ id: rows.insertId });
+          res.status(201).json({ id: rows.insertId });
         },
       );
     } catch (err) {
@@ -64,6 +64,18 @@ class StudentController {
 
   updateStudent(req, res) {
     try {
+      const { id } = req.params;
+      const { dni, name, surname, email } = req.body;
+      const sql = `UPDATE students SET dni=?, name=?, surname=?, email=? WHERE student_id=?;`;
+      db.query(sql, [dni, name, surname, email, id], (err, rows) => {
+        if (err) {
+          return res.status(400).send(err);
+        }
+        if (rows.affectedRows === 0) {
+          return res.status(404).json({ msg: 'Student not found to update.' });
+        }
+        res.status(200).json({ msg: 'Student updated succesfully', id });
+      });
     } catch (err) {
       res.status(500).send(err);
     }

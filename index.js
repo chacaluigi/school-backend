@@ -6,6 +6,7 @@ const studentRoutes = require('./routes/studentRoutes.js');
 const teacherRoutes = require('./routes/teacherRoutes.js');
 
 app.use(express.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.send('Holaaa Luigiiiiii');

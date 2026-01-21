@@ -4,13 +4,35 @@ class StudentController {
   constructor() {}
 
   consult(req, res) {
-    res.json({ msg: 'Student consult from class' });
+    try {
+      db.query(`SELECT * FROM students;`, (err, rows) => {
+        if (err) {
+          return res.status(400).send(err);
+        }
+        if (rows.length === 0) {
+          return res.status(204).json({ msg: 'There are no students.' });
+        }
+        res.status(200).json(rows);
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
   }
 
   insert(req, res) {
     try {
       const { dni, name, surname, email } = req.body;
-      res.status(201).json({ message: 'Student has been created.' });
+      db.query(
+        `INSERT INTO students(dni,name,surname,email) VALUES(?,?,?,?);`,
+        [dni, name, surname, email],
+        (err, rows) => {
+          if (err) {
+            return res.status(400).send(err);
+          }
+          return res.status(201).json({ id: rows.insertId });
+        },
+      );
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
@@ -18,11 +40,33 @@ class StudentController {
   }
 
   studentDetail(req, res) {
-    res.json({ msg: 'Student detail from class' });
+    try {
+      const { id } = req.params;
+      db.query(
+        `SELECT * FROM students WHERE student_id=?;`,
+        [id],
+        (err, rows) => {
+          if (err) {
+            console.log(err);
+            return res.status(400).send(err);
+          }
+          if (rows.length === 0) {
+            return res.status(404).json({ msg: 'Student not found.' });
+          }
+          res.status(200).json(rows[0]);
+        },
+      );
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
   }
 
   updateStudent(req, res) {
-    res.json({ msg: 'Update student from class' });
+    try {
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 
   deleteStudent(req, res) {

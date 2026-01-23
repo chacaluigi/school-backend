@@ -72,7 +72,7 @@ class StudentController {
           return res.status(400).send(err);
         }
         if (rows.affectedRows === 0) {
-          return res.status(404).json({ msg: 'Student not found to update.' });
+          return res.status(404).json({ msg: 'Student not found to update' });
         }
         res.status(200).json({ msg: 'Student updated succesfully', id });
       });
@@ -82,7 +82,21 @@ class StudentController {
   }
 
   deleteStudent(req, res) {
-    res.json({ msg: 'Delete student from class' });
+    try {
+      const { id } = req.params;
+      const query = `DELETE FROM students WHERE student_id = ?;`;
+      db.query(query, [id], (err, rows) => {
+        if (err) {
+          return res.status(400).send(err);
+        }
+        if (rows.affectedRows === 0) {
+          return res.status(404).json({ msg: 'Student not found for delete' });
+        }
+        res.status(200).json({ msg: 'Student delete succesfully', id });
+      });
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 }
 

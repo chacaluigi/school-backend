@@ -23,7 +23,30 @@ class TeacherController {
   }
 
   insert(req, res) {
-    res.json({ msg: 'Insert teacher from class' });
+    try {
+      const {
+        teacher_id,
+        dni,
+        name,
+        surname,
+        email,
+        profession,
+        phone_number,
+      } = req.body;
+      const query = `INSERT INTO teachers (dni, name, surname, email, profession, phone_number) VALUES(?, ?, ?, ?, ?, ?);`;
+      db.query(
+        query,
+        [dni, name, surname, email, profession, phone_number],
+        (err, rows) => {
+          if (err) {
+            return res.status(400).send(err);
+          }
+          res.status(201).json({ msg: 'Teacher insert successfully', rows });
+        },
+      );
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 
   teacherDetail(req, res) {

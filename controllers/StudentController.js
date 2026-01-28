@@ -24,7 +24,7 @@ class StudentController {
     try {
       const { dni, name, surname, email } = req.body;
       db.query(
-        `INSERT INTO students(dni,name,surname,email) VALUES(?,?,?,?);`,
+        `INSERT INTO students(dni,name,surname,email) VALUES(?, ?, ?, ?);`,
         [dni, name, surname, email],
         (err, rows) => {
           if (err) {

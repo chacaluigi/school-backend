@@ -41,7 +41,9 @@ class TeacherController {
           if (err) {
             return res.status(400).send(err);
           }
-          res.status(201).json({ msg: 'Teacher insert successfully', rows });
+          res
+            .status(201)
+            .json({ msg: 'Teacher insert successfully', teacher_id });
         },
       );
     } catch (err) {
@@ -50,7 +52,21 @@ class TeacherController {
   }
 
   teacherDetail(req, res) {
-    res.json({ msg: 'Teacher detail from class' });
+    try {
+      const { id } = req.params;
+      const query = `SELECT * FROM teachers WHERE teacher_id = ?;`;
+      db.query(query, id, (err, rows) => {
+        if (err) {
+          return res.status(404).send(err);
+        }
+        if (rows.length === 0) {
+          return res.status(404).json({ msg: 'Teacher not found.' });
+        }
+        res.status(200).json(rows[0]);
+      });
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 
   updateTeacher(req, res) {

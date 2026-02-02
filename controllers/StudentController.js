@@ -92,7 +92,7 @@ class StudentController {
         if (rows.affectedRows === 0) {
           return res.status(404).json({ msg: 'Student not found for delete' });
         }
-        res.status(200).json({ msg: 'Student delete succesfully', id });
+        res.status(200).json({ msg: 'Student delete successfully', id });
       });
     } catch (err) {
       res.status(500).send(err);

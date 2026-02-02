@@ -93,7 +93,23 @@ class TeacherController {
   }
 
   deleteTeacher(req, res) {
-    res.json({ msg: 'Delete teacher from class' });
+    try {
+      const { id } = req.params;
+      const query = `DELETE FROM teachers WHERE teacher_id = ?;`;
+      db.query(query, [id], (err, rows) => {
+        if (err) {
+          return res.status(404).send(err);
+        }
+        if (rows.affectedRows === 0) {
+          return res
+            .status(404)
+            .json({ msg: 'The teacher was no longer there' });
+        }
+        res.status(200).json({ msg: 'Teacher delete successfully', id });
+      });
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 }
 

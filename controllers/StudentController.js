@@ -74,7 +74,7 @@ class StudentController {
         if (rows.affectedRows === 0) {
           return res.status(404).json({ msg: 'Student not found to update' });
         }
-        res.status(200).json({ msg: 'Student updated succesfully', id });
+        res.status(200).json({ msg: 'Student updated successfully', id });
       });
     } catch (err) {
       res.status(500).send(err);

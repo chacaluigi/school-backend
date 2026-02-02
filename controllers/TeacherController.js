@@ -70,7 +70,26 @@ class TeacherController {
   }
 
   updateTeacher(req, res) {
-    res.json({ msg: 'Update teacher from class' });
+    try {
+      const { id } = req.params;
+      const { dni, name, surname, email, profession, phone_number } = req.body;
+      const query = `UPDATE teachers SET dni=?, name=?, surname=?, email=?, profession=?,phone_number=? WHERE teacher_id = ?`;
+      db.query(
+        query,
+        [dni, name, surname, email, profession, phone_number, id],
+        (err, rows) => {
+          if (err) {
+            return res.status(404).send(err);
+          }
+          if (rows.affectedRows === 0) {
+            return res.status(404).json({ msg: 'Teacher not found to update' });
+          }
+          res.status(200).json({ msg: 'Teacher updated successfully' });
+        },
+      );
+    } catch (err) {
+      res.status(500).send(err);
+    }
   }
 
   deleteTeacher(req, res) {

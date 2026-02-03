@@ -19,6 +19,32 @@ class CourseController {
       res.status(500).send(err);
     }
   }
+
+  insert(req, res) {
+    try {
+      const { name, description, teacher_id } = req.body;
+      const query = `INSERT INTO courses (name, description, teacher_id) VALUES(?, ?, ?);`;
+      db.query(query, [name, description, teacher_id], (err, rows) => {
+        if (err) {
+          return res.status(400).send(err);
+        }
+        if (rows.affectedRows === 0) {
+          return res.status(404).json({ msg: 'The course was not inserted' });
+        }
+        res
+          .status(201)
+          .json({ msg: 'Course inserted successfully: ' + rows.insertId });
+      });
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
+
+  teacherDetail(req, res) {}
+
+  updateTeacher(req, res) {}
+
+  deleteTeacher(req, res) {}
 }
 
 module.exports = new CourseController();

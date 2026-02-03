@@ -26,17 +26,23 @@ class CourseController {
       const query = `INSERT INTO courses (name, description, teacher_id) VALUES(?, ?, ?);`;
       db.query(query, [name, description, teacher_id], (err, rows) => {
         if (err) {
-          return res.status(400).send(err);
+          // if teacher_id is invalid
+          if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+            return res.status(400).json({
+              msg: `The teacher with ID ${teacher_id} does not exist`,
+            });
+          }
+          console.log(err);
+          return res.status(500).json({ msg: 'Database error' });
         }
-        if (rows.affectedRows === 0) {
-          return res.status(404).json({ msg: 'The course was not inserted' });
-        }
-        res
-          .status(201)
-          .json({ msg: 'Course inserted successfully: ' + rows.insertId });
+
+        res.status(201).json({
+          msg: 'Course inserted successfully: ',
+          courseId: rows.insertId,
+        });
       });
     } catch (err) {
-      res.status(500).send(err);
+      res.status(500).json({ msg: 'Internal server error' });
     }
   }
 
@@ -58,7 +64,30 @@ class CourseController {
     }
   }
 
-  updateCourse(req, res) {}
+  updateCourse(req, res) {
+    try {
+      const { id } = req.params;
+      const { name, description, teacher_id } = req.body;
+      const query = `UPDATE courses SET name=?, description=?, teacher_id=? WHERE course_id = ?;`;
+      db.query(query, [name, description, teacher_id, id], (err, rows) => {
+        if (err) {
+          // if teacher_id does not exist
+          if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+            return res.status(400);
+          }
+          return res.status(400).send(err);
+        }
+        if (rows.affectedRows === 0) {
+          return res
+            .status(404)
+            .json({ msg: 'Course not found to update', id });
+        }
+        res.status(200).json({ msg: 'Course updated successfully' });
+      });
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
 
   deleteCourse(req, res) {}
 }

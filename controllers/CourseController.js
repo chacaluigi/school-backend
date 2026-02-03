@@ -40,11 +40,27 @@ class CourseController {
     }
   }
 
-  teacherDetail(req, res) {}
+  courseDetail(req, res) {
+    try {
+      const { id } = req.params;
+      const query = `SELECT * FROM courses WHERE course_id = ?;`;
+      db.query(query, [id], (err, rows) => {
+        if (err) {
+          return res.status(400).send(err);
+        }
+        if (rows.length === 0) {
+          return res.status(404).json({ msg: 'Course not found' });
+        }
+        res.status(200).json(rows[0]);
+      });
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  }
 
-  updateTeacher(req, res) {}
+  updateCourse(req, res) {}
 
-  deleteTeacher(req, res) {}
+  deleteCourse(req, res) {}
 }
 
 module.exports = new CourseController();

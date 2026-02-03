@@ -32,7 +32,7 @@ class CourseController {
               msg: `The teacher with ID ${teacher_id} does not exist`,
             });
           }
-          console.log(err);
+          console.error(err);
           return res.status(500).json({ msg: 'Database error' });
         }
 
@@ -73,19 +73,25 @@ class CourseController {
         if (err) {
           // if teacher_id does not exist
           if (err.code === 'ER_NO_REFERENCED_ROW_2') {
-            return res.status(400);
+            return res.status(400).json({
+              msg: `The teacher with ID=${teacher_id} does not exist`,
+            });
           }
-          return res.status(400).send(err);
+          console.error(err);
+          return res.status(500).json({ msg: 'Update database error' });
         }
+
         if (rows.affectedRows === 0) {
           return res
             .status(404)
-            .json({ msg: 'Course not found to update', id });
+            .json({ msg: `Course not found to update with ID=${id}` });
         }
+
         res.status(200).json({ msg: 'Course updated successfully' });
       });
     } catch (err) {
-      res.status(500).send(err);
+      console.error(err);
+      res.status(500).json({ msg: 'Internal server error' });
     }
   }
 

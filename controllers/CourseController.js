@@ -95,7 +95,36 @@ class CourseController {
     }
   }
 
-  deleteCourse(req, res) {}
+  deleteCourse(req, res) {
+    try {
+      const { id } = req.params;
+      const query = `DELETE FROM courses WHERE course_id = ?;`;
+      db.query(query, [id], (err, rows) => {
+        if (err) {
+          // restriccion error: someone depends on this course
+          if (err.code === 'ER_ROW_IS_REFERENCED_2') {
+            return res.status(409).json({
+              msg: 'It can not delete: The course has associated records',
+            });
+          }
+
+          console.error(err);
+          return res.status(500).json({ msg: 'Database error' });
+        }
+
+        if (rows.affectedRows === 0) {
+          return res.status(404).json({ msg: 'Course not found to delete' });
+        }
+
+        res
+          .status(200)
+          .json({ msg: `Course with ID=${id} delete successfully` });
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: 'Internal server error' });
+    }
+  }
 }
 
 module.exports = new CourseController();

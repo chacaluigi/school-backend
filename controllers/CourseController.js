@@ -26,7 +26,7 @@ class CourseController {
       const query = `INSERT INTO courses (name, description, teacher_id) VALUES(?, ?, ?);`;
       db.query(query, [name, description, teacher_id], (err, rows) => {
         if (err) {
-          // if teacher_id is invalid
+          // if the FK teacher_id is invalid
           if (err.code === 'ER_NO_REFERENCED_ROW_2') {
             return res.status(400).json({
               msg: `The teacher with ID ${teacher_id} does not exist`,
@@ -119,6 +119,33 @@ class CourseController {
         res
           .status(200)
           .json({ msg: `Course with ID=${id} delete successfully` });
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: 'Internal server error' });
+    }
+  }
+
+  associateStudent(req, res) {
+    try {
+      const { course_id, student_id } = req.body;
+      const query = `INSERT INTO courses_students (course_id, student_id) VALUES (?, ?);`;
+      db.query(query, [course_id, student_id], (err, rows) => {
+        if (err) {
+          // if FKs not existe
+          if (err.code === 'ER_NO_REFERENCED_ROW_2') {
+            return res.status(400).json({
+              msg: `The course with ID=${course_id} or student with ID=${student_id} do not exist`,
+            });
+          }
+
+          console.error(err);
+          return res.status(400).json({ msg: 'Database error' });
+        }
+
+        res
+          .status(201)
+          .json({ msg: 'Student inserted on course successfully' });
       });
     } catch (err) {
       console.error(err);
